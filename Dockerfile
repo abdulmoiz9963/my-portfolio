@@ -1,4 +1,6 @@
-FROM richarvey/nginx-php-fpm:latest
+FROM richarvey/nginx-php-fpm:3.1.6
+
+RUN apk add --no-cache php84 php84-fpm php84-pdo php84-pdo_mysql php84-mbstring php84-zip php84-gd || true
 
 COPY . .
 
