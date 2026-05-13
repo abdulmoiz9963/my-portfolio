@@ -64,3 +64,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('/projects/{project}', [AdminController::class, 'projectsUpdate'])->name('projects.update');
     Route::delete('/projects/{project}', [AdminController::class, 'projectsDestroy'])->name('projects.destroy');
 });
+Route::get('/login', function () {
+    return redirect()->route('admin.login');
+})->name('login');
