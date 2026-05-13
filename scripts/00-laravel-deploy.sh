@@ -14,5 +14,7 @@ php artisan migrate --force
 
 echo "Creating storage symlink..."
 php artisan storage:link
+echo "Seeding admin user..."
+php artisan db:seed --class=AdminSeeder --force
 
 echo "Done!"
