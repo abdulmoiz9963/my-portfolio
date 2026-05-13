@@ -17,6 +17,6 @@ echo "Creating storage symlink..."
 php artisan storage:link
 
 echo "Seeding admin user..."
-php artisan db:seed --class=AdminSeeder --force
+php artisan db:seed --force
 
 echo "Done!"
