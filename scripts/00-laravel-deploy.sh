@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
+set -e
 
 echo "Running composer install..."
-composer install --no-dev --working-dir=/var/www/html
+composer install --no-dev --optimize-autoloader --working-dir=/var/www/html
 
 echo "Caching config..."
 php artisan config:cache
@@ -14,6 +15,7 @@ php artisan migrate --force
 
 echo "Creating storage symlink..."
 php artisan storage:link
+
 echo "Seeding admin user..."
 php artisan db:seed --class=AdminSeeder --force
 
