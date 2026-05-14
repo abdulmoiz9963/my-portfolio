@@ -27,12 +27,11 @@ class PortfolioController extends Controller
     $cvPath = $profile->cv_path ?? null;
 
     if ($cvPath) {
-        // fl_attachment forces download with correct .pdf filename
-        $downloadUrl = str_replace('/upload/', '/upload/fl_attachment:Abdul_Moiz_Ashraf_CV.pdf/', $cvPath);
+        // Insert fl_attachment without specifying filename (avoids duplication)
+        $downloadUrl = str_replace('/upload/', '/upload/fl_attachment/', $cvPath);
         return redirect($downloadUrl);
     }
 
-    // Fallback to local CV file
     $defaultPath = public_path('cv/Abdul_Moiz_Ashraf_CV.pdf');
     if (file_exists($defaultPath)) {
         return response()->download($defaultPath, 'Abdul_Moiz_Ashraf_CV.pdf');
