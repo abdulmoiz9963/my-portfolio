@@ -116,7 +116,7 @@ class AdminController extends Controller
                 [
                     'folder'        => 'portfolio/cv',
                     'resource_type' => 'raw',
-                    'public_id'     => 'Abdul_Moiz_Ashraf_CV',
+                    'public_id'     => 'Abdul_Moiz_Ashraf_CV.pdf',  // ← add .pdf here
                 ]
             );
             $profile->cv_path = $result['secure_url'];
