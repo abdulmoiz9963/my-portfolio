@@ -47,7 +47,7 @@
         <div class="hero-image">
             <div class="image-frame">
                 @if($profile && $profile->profile_image)
-                    <img src="{{ $profile->profile_image }}">
+                    <img src="{{ $profile->profile_image }}" alt="{{ $profile->name }}" class="profile-img">
                 @else
                     <div class="profile-placeholder">
                         <i class="fas fa-user-astronaut"></i>
@@ -86,7 +86,7 @@
             <div class="about-image-col">
                 <div class="about-img-wrap">
                     @if($profile && $profile->profile_image)
-                        <img src="{{ $profile->profile_image }}">
+                        <img src="{{ $profile->profile_image }}" alt="{{ $profile->name }}" class="about-img">
                     @else
                         <div class="about-placeholder"><i class="fas fa-user-astronaut"></i></div>
                     @endif
@@ -338,7 +338,7 @@
             <div class="project-card reveal">
                 @if($project->image)
                 <div class="project-img-wrap">
-                    <img src="{{ $project->image }}">
+                <img src="{{ $project->image }}" alt="{{ $project->title }}" class="project-img">
                     <div class="project-overlay">
                         <div class="project-links">
                             @if($project->live_url)
