@@ -65,27 +65,33 @@ class AdminController extends Controller
     }
 
     public function profileUpdate(Request $request)
-    {
-        $request->validate([
-            'name'          => 'required|string|max:100',
-            'email'         => 'required|email|max:100',
-            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
-
-        $profile = Profile::firstOrNew([]);
-        $data = $request->only(['name', 'email', 'phone', 'location', 'tagline', 'about', 'linkedin', 'github']);
-
-       if ($request->hasFile('profile_image')) {
-    $file = $request->file('profile_image');
-    $result = cloudinary()->uploadApi()->upload($file->getRealPath(), [
-        'folder' => 'portfolio/profile',
+{
+    $request->validate([
+        'name'          => 'required|string|max:100',
+        'email'         => 'required|email|max:100',
+        'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
     ]);
-    $data['profile_image'] = $result['secure_url'];
-}
 
-        $profile->fill($data)->save();
-        return back()->with('success', 'Profile updated successfully!');
+    $profile = Profile::firstOrNew([]);
+    $data = $request->only(['name', 'email', 'phone', 'location', 'tagline', 'about', 'linkedin', 'github']);
+
+    if ($request->hasFile('profile_image') && $request->file('profile_image')->isValid()) {
+        try {
+            $file = $request->file('profile_image');
+            $result = cloudinary()->uploadApi()->upload($file->getRealPath(), [
+                'folder' => 'portfolio/profile',
+            ]);
+            if (isset($result['secure_url'])) {
+                $data['profile_image'] = $result['secure_url'];
+            }
+        } catch (\Exception $e) {
+            return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+        }
     }
+
+    $profile->fill($data)->save();
+    return back()->with('success', 'Profile updated successfully!');
+}
 
     // ─── CV ─────────────────────────────────────────────────────────────────────
 
