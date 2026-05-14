@@ -170,6 +170,8 @@ class AdminController extends Controller
         return back()->with('success', 'Skill deleted.');
     }
 
+    // ─── Experience ─────────────────────────────────────────────────────────────
+
     public function experienceIndex()
     {
         $experiences = Experience::orderBy('sort_order')->get();
@@ -189,6 +191,7 @@ class AdminController extends Controller
             'start_date'  => 'required|string|max:50',
             'description' => 'required|string',
         ]);
+
         Experience::create($request->only(['role', 'company', 'start_date', 'end_date', 'type', 'description', 'tech_stack', 'sort_order']));
         return redirect()->route('admin.experience.index')->with('success', 'Experience added!');
     }
@@ -206,6 +209,7 @@ class AdminController extends Controller
             'start_date'  => 'required|string|max:50',
             'description' => 'required|string',
         ]);
+
         $experience->update($request->only(['role', 'company', 'start_date', 'end_date', 'type', 'description', 'tech_stack', 'sort_order']));
         return redirect()->route('admin.experience.index')->with('success', 'Experience updated!');
     }
@@ -215,6 +219,7 @@ class AdminController extends Controller
         $experience->delete();
         return back()->with('success', 'Experience deleted.');
     }
+
 
     public function projectsIndex()
     {
