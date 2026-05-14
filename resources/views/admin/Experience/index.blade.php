@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('page-title', 'Experience')
+@section('page-title', 'experience')
 @section('content')
 <div class="content-header">
     <h2 class="content-title">Manage Experience</h2>
