@@ -9,27 +9,20 @@ use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-
 class AdminController extends Controller
 {
-
-// Add this private method to AdminController
-private function uploadToCloudinary($filePath, $options = [])
-{
-    $cloudinary = new \Cloudinary\Cloudinary([
-        'cloud' => [
-            'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-            'api_key'    => env('CLOUDINARY_API_KEY'),
-            'api_secret' => env('CLOUDINARY_API_SECRET'),
-        ],
-        'url' => [
-            'secure' => true,
-        ],
-    ]);
-
-    return $cloudinary->uploadApi()->upload($filePath, $options);
-}
-    // ─── Dashboard ─────────────────────────────────────────────────────────────
+    private function uploadToCloudinary($filePath, $options = [])
+    {
+        $cloudinary = new \Cloudinary\Cloudinary([
+            'cloud' => [
+                'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                'api_key'    => env('CLOUDINARY_API_KEY'),
+                'api_secret' => env('CLOUDINARY_API_SECRET'),
+            ],
+            'url' => ['secure' => true],
+        ]);
+        return $cloudinary->uploadApi()->upload($filePath, $options);
+    }
 
     public function dashboard()
     {
@@ -37,13 +30,11 @@ private function uploadToCloudinary($filePath, $options = [])
             'projects'   => Project::count(),
             'skills'     => Skill::count(),
             'experience' => Experience::count(),
-            'messages'   => 0, // extend with ContactMessage model if needed
+            'messages'   => 0,
         ];
         $recentProjects = Project::latest()->take(5)->get();
         return view('admin.dashboard', compact('stats', 'recentProjects'));
     }
-
-    // ─── Auth ───────────────────────────────────────────────────────────────────
 
     public function loginForm()
     {
@@ -56,12 +47,10 @@ private function uploadToCloudinary($filePath, $options = [])
             'email'    => 'required|email',
             'password' => 'required',
         ]);
-
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->route('admin.dashboard');
         }
-
         return back()->with('error', 'Invalid credentials. Please try again.');
     }
 
@@ -73,8 +62,6 @@ private function uploadToCloudinary($filePath, $options = [])
         return redirect()->route('admin.login');
     }
 
-    // ─── Profile ────────────────────────────────────────────────────────────────
-
     public function profileEdit()
     {
         $profile = Profile::firstOrNew([]);
@@ -82,37 +69,31 @@ private function uploadToCloudinary($filePath, $options = [])
     }
 
     public function profileUpdate(Request $request)
-{
-    $request->validate([
-        'name'          => 'required|string|max:100',
-        'email'         => 'required|email|max:100',
-        'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-    ]);
+    {
+        $request->validate([
+            'name'          => 'required|string|max:100',
+            'email'         => 'required|email|max:100',
+            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
 
-    $profile = Profile::firstOrNew([]);
-    $data = $request->only(['name', 'email', 'phone', 'location', 'tagline', 'about', 'linkedin', 'github']);
+        $profile = Profile::firstOrNew([]);
+        $data = $request->only(['name', 'email', 'phone', 'location', 'tagline', 'about', 'linkedin', 'github']);
 
-    if ($request->hasFile('profile_image') && $request->file('profile_image')->isValid()) {
-    try {
-    $result = $this->uploadToCloudinary(
-        $request->file('cv')->getRealPath(),
-        [
-            'folder'        => 'portfolio/cv',
-            'resource_type' => 'raw',
-            'public_id'     => 'Abdul_Moiz_Ashraf_CV',
-        ]
-    );
-    $profile->cv_path = $result['secure_url'];
-} catch (\Exception $e) {
-    return back()->with('error', 'CV upload failed: ' . $e->getMessage());
-}
-}
+        if ($request->hasFile('profile_image') && $request->file('profile_image')->isValid()) {
+            try {
+                $result = $this->uploadToCloudinary(
+                    $request->file('profile_image')->getRealPath(),
+                    ['folder' => 'portfolio/profile']
+                );
+                $data['profile_image'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
+        }
 
-    $profile->fill($data)->save();
-    return back()->with('success', 'Profile updated successfully!');
-}
-
-    // ─── CV ─────────────────────────────────────────────────────────────────────
+        $profile->fill($data)->save();
+        return back()->with('success', 'Profile updated successfully!');
+    }
 
     public function cvUpload()
     {
@@ -121,29 +102,31 @@ private function uploadToCloudinary($filePath, $options = [])
         return view('admin.cv.upload', compact('currentCv'));
     }
 
-    // REPLACE entire cvStore method with this
-public function cvStore(Request $request)
-{
-    $request->validate([
-        'cv' => 'required|file|mimes:pdf|max:5120',
-    ]);
+    public function cvStore(Request $request)
+    {
+        $request->validate([
+            'cv' => 'required|file|mimes:pdf|max:5120',
+        ]);
 
-    $profile = Profile::firstOrNew([]);
+        $profile = Profile::firstOrNew([]);
 
-    $file = $request->file('cv');
-    $result = cloudinary()->uploadApi()->upload($file->getRealPath(), [
-        'folder'        => 'portfolio/cv',
-        'resource_type' => 'raw',
-        'public_id'     => 'Abdul_Moiz_Ashraf_CV',
-    ]);
+        try {
+            $result = $this->uploadToCloudinary(
+                $request->file('cv')->getRealPath(),
+                [
+                    'folder'        => 'portfolio/cv',
+                    'resource_type' => 'raw',
+                    'public_id'     => 'Abdul_Moiz_Ashraf_CV',
+                ]
+            );
+            $profile->cv_path = $result['secure_url'];
+            $profile->save();
+        } catch (\Exception $e) {
+            return back()->with('error', 'CV upload failed: ' . $e->getMessage());
+        }
 
-    $profile->cv_path = $result['secure_url'];
-    $profile->save();
-
-    return back()->with('success', 'CV uploaded successfully!');
-}
-
-    // ─── Skills ─────────────────────────────────────────────────────────────────
+        return back()->with('success', 'CV uploaded successfully!');
+    }
 
     public function skillsIndex()
     {
@@ -162,7 +145,6 @@ public function cvStore(Request $request)
             'name'     => 'required|string|max:100',
             'category' => 'required|string|max:100',
         ]);
-
         Skill::create($request->only(['name', 'category', 'icon', 'sort_order']));
         return redirect()->route('admin.skills.index')->with('success', 'Skill added!');
     }
@@ -178,7 +160,6 @@ public function cvStore(Request $request)
             'name'     => 'required|string|max:100',
             'category' => 'required|string|max:100',
         ]);
-
         $skill->update($request->only(['name', 'category', 'icon', 'sort_order']));
         return redirect()->route('admin.skills.index')->with('success', 'Skill updated!');
     }
@@ -188,8 +169,6 @@ public function cvStore(Request $request)
         $skill->delete();
         return back()->with('success', 'Skill deleted.');
     }
-
-    // ─── Experience ─────────────────────────────────────────────────────────────
 
     public function experienceIndex()
     {
@@ -210,7 +189,6 @@ public function cvStore(Request $request)
             'start_date'  => 'required|string|max:50',
             'description' => 'required|string',
         ]);
-
         Experience::create($request->only(['role', 'company', 'start_date', 'end_date', 'type', 'description', 'tech_stack', 'sort_order']));
         return redirect()->route('admin.experience.index')->with('success', 'Experience added!');
     }
@@ -228,7 +206,6 @@ public function cvStore(Request $request)
             'start_date'  => 'required|string|max:50',
             'description' => 'required|string',
         ]);
-
         $experience->update($request->only(['role', 'company', 'start_date', 'end_date', 'type', 'description', 'tech_stack', 'sort_order']));
         return redirect()->route('admin.experience.index')->with('success', 'Experience updated!');
     }
@@ -238,8 +215,6 @@ public function cvStore(Request $request)
         $experience->delete();
         return back()->with('success', 'Experience deleted.');
     }
-
-    // ─── Projects ───────────────────────────────────────────────────────────────
 
     public function projectsIndex()
     {
@@ -264,16 +239,16 @@ public function cvStore(Request $request)
         $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
-    try {
-        $result = $this->uploadToCloudinary(
-            $request->file('image')->getRealPath(),
-            ['folder' => 'portfolio/projects']
-        );
-        $data['image'] = $result['secure_url'];
-    } catch (\Exception $e) {
-        return back()->with('error', 'Image upload failed: ' . $e->getMessage());
-    }
-}
+            try {
+                $result = $this->uploadToCloudinary(
+                    $request->file('image')->getRealPath(),
+                    ['folder' => 'portfolio/projects']
+                );
+                $data['image'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
+        }
 
         Project::create($data);
         return redirect()->route('admin.projects.index')->with('success', 'Project added!');
@@ -296,16 +271,16 @@ public function cvStore(Request $request)
         $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
-    try {
-        $result = $this->uploadToCloudinary(
-            $request->file('image')->getRealPath(),
-            ['folder' => 'portfolio/projects']
-        );
-        $data['image'] = $result['secure_url'];
-    } catch (\Exception $e) {
-        return back()->with('error', 'Image upload failed: ' . $e->getMessage());
-    }
-}
+            try {
+                $result = $this->uploadToCloudinary(
+                    $request->file('image')->getRealPath(),
+                    ['folder' => 'portfolio/projects']
+                );
+                $data['image'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
+        }
 
         $project->update($data);
         return redirect()->route('admin.projects.index')->with('success', 'Project updated!');
