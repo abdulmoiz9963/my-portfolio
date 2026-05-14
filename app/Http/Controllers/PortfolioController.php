@@ -27,9 +27,17 @@ class PortfolioController extends Controller
     $cvPath = $profile->cv_path ?? null;
 
     if ($cvPath) {
-        // Insert fl_attachment without specifying filename (avoids duplication)
-        $downloadUrl = str_replace('/upload/', '/upload/fl_attachment/', $cvPath);
-        return redirect($downloadUrl);
+        // Stream the file content from Cloudinary and serve it as a download
+        $fileContent = file_get_contents($cvPath);
+
+        if ($fileContent === false) {
+            return back()->with('error', 'Could not fetch CV. Please try again.');
+        }
+
+        return response($fileContent, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="Abdul_Moiz_Ashraf_CV.pdf"',
+        ]);
     }
 
     $defaultPath = public_path('cv/Abdul_Moiz_Ashraf_CV.pdf');
