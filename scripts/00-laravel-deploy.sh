@@ -7,6 +7,10 @@ composer install --no-dev --optimize-autoloader --working-dir=/var/www/html
 echo "Publishing Cloudinary config..."
 php artisan vendor:publish --provider="CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider" --force || true
 
+echo "Clearing cache..."
+php artisan config:clear
+php artisan cache:clear
+
 echo "Caching config..."
 php artisan config:cache
 

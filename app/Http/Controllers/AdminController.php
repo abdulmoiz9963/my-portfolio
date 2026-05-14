@@ -12,6 +12,23 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
+
+// Add this private method to AdminController
+private function uploadToCloudinary($filePath, $options = [])
+{
+    $cloudinary = new \Cloudinary\Cloudinary([
+        'cloud' => [
+            'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+            'api_key'    => env('CLOUDINARY_API_KEY'),
+            'api_secret' => env('CLOUDINARY_API_SECRET'),
+        ],
+        'url' => [
+            'secure' => true,
+        ],
+    ]);
+
+    return $cloudinary->uploadApi()->upload($filePath, $options);
+}
     // ─── Dashboard ─────────────────────────────────────────────────────────────
 
     public function dashboard()
@@ -76,18 +93,20 @@ class AdminController extends Controller
     $data = $request->only(['name', 'email', 'phone', 'location', 'tagline', 'about', 'linkedin', 'github']);
 
     if ($request->hasFile('profile_image') && $request->file('profile_image')->isValid()) {
-        try {
-            $file = $request->file('profile_image');
-            $result = cloudinary()->uploadApi()->upload($file->getRealPath(), [
-                'folder' => 'portfolio/profile',
-            ]);
-            if (isset($result['secure_url'])) {
-                $data['profile_image'] = $result['secure_url'];
-            }
-        } catch (\Exception $e) {
-            return back()->with('error', 'Image upload failed: ' . $e->getMessage());
-        }
-    }
+    try {
+    $result = $this->uploadToCloudinary(
+        $request->file('cv')->getRealPath(),
+        [
+            'folder'        => 'portfolio/cv',
+            'resource_type' => 'raw',
+            'public_id'     => 'Abdul_Moiz_Ashraf_CV',
+        ]
+    );
+    $profile->cv_path = $result['secure_url'];
+} catch (\Exception $e) {
+    return back()->with('error', 'CV upload failed: ' . $e->getMessage());
+}
+}
 
     $profile->fill($data)->save();
     return back()->with('success', 'Profile updated successfully!');
@@ -244,11 +263,16 @@ public function cvStore(Request $request)
         $data = $request->only(['title', 'description', 'tech_stack', 'live_url', 'github_url', 'sort_order', 'category']);
         $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
-        if ($request->hasFile('image')) {
-    $result = cloudinary()->uploadApi()->upload($request->file('image')->getRealPath(), [
-        'folder' => 'portfolio/projects',
-    ]);
-    $data['image'] = $result['secure_url'];
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+    try {
+        $result = $this->uploadToCloudinary(
+            $request->file('image')->getRealPath(),
+            ['folder' => 'portfolio/projects']
+        );
+        $data['image'] = $result['secure_url'];
+    } catch (\Exception $e) {
+        return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+    }
 }
 
         Project::create($data);
@@ -271,11 +295,16 @@ public function cvStore(Request $request)
         $data = $request->only(['title', 'description', 'tech_stack', 'live_url', 'github_url', 'sort_order', 'category']);
         $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
-        if ($request->hasFile('image')) {
-    $result = cloudinary()->uploadApi()->upload($request->file('image')->getRealPath(), [
-        'folder' => 'portfolio/projects',
-    ]);
-    $data['image'] = $result['secure_url'];
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+    try {
+        $result = $this->uploadToCloudinary(
+            $request->file('image')->getRealPath(),
+            ['folder' => 'portfolio/projects']
+        );
+        $data['image'] = $result['secure_url'];
+    } catch (\Exception $e) {
+        return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+    }
 }
 
         $project->update($data);
