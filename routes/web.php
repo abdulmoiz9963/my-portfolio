@@ -67,3 +67,24 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 Route::get('/login', function () {
     return redirect()->route('admin.login');
 })->name('login');
+
+Route::get('/test-cloudinary', function() {
+    try {
+        $config = config('cloudinary.cloud_url');
+        $masked = substr($config, 0, 20) . '...';
+
+        // Test if credentials are loaded
+        $cloudName = env('CLOUDINARY_CLOUD_NAME');
+        $apiKey = env('CLOUDINARY_API_KEY');
+        $apiSecret = env('CLOUDINARY_API_SECRET') ? 'SET' : 'NOT SET';
+
+        return response()->json([
+            'cloud_url_preview' => $masked,
+            'cloud_name' => $cloudName,
+            'api_key' => $apiKey,
+            'api_secret' => $apiSecret,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()]);
+    }
+});
