@@ -8,7 +8,7 @@ use App\Models\Experience;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class AdminController extends Controller
 {
@@ -75,12 +75,12 @@ class AdminController extends Controller
         $profile = Profile::firstOrNew([]);
         $data = $request->only(['name', 'email', 'phone', 'location', 'tagline', 'about', 'linkedin', 'github']);
 
-        if ($request->hasFile('profile_image')) {
-            if ($profile->profile_image) {
-                Storage::disk('public')->delete($profile->profile_image);
-            }
-            $data['profile_image'] = $request->file('profile_image')->store('profile', 'public');
-        }
+       if ($request->hasFile('profile_image')) {
+    $uploaded = Cloudinary::upload($request->file('profile_image')->getRealPath(), [
+        'folder' => 'portfolio/profile',
+    ]);
+    $data['profile_image'] = $uploaded->getSecurePath();
+}
 
         $profile->fill($data)->save();
         return back()->with('success', 'Profile updated successfully!');
@@ -95,23 +95,26 @@ class AdminController extends Controller
         return view('admin.cv.upload', compact('currentCv'));
     }
 
-    public function cvStore(Request $request)
-    {
-        $request->validate([
-            'cv' => 'required|file|mimes:pdf|max:5120',
-        ]);
+    // REPLACE entire cvStore method with this
+public function cvStore(Request $request)
+{
+    $request->validate([
+        'cv' => 'required|file|mimes:pdf|max:5120',
+    ]);
 
-        $profile = Profile::firstOrNew([]);
-        if ($profile->cv_path) {
-            Storage::disk('public')->delete($profile->cv_path);
-        }
+    $profile = Profile::firstOrNew([]);
 
-        $path = $request->file('cv')->store('cv', 'public');
-        $profile->cv_path = $path;
-        $profile->save();
+    $uploaded = Cloudinary::uploadFile($request->file('cv')->getRealPath(), [
+        'folder'        => 'portfolio/cv',
+        'resource_type' => 'raw',
+        'public_id'     => 'Abdul_Moiz_Ashraf_CV',
+    ]);
 
-        return back()->with('success', 'CV uploaded successfully!');
-    }
+    $profile->cv_path = $uploaded->getSecurePath();
+    $profile->save();
+
+    return back()->with('success', 'CV uploaded successfully!');
+}
 
     // ─── Skills ─────────────────────────────────────────────────────────────────
 
@@ -234,8 +237,11 @@ class AdminController extends Controller
         $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('projects', 'public');
-        }
+    $uploaded = Cloudinary::upload($request->file('image')->getRealPath(), [
+        'folder' => 'portfolio/projects',
+    ]);
+    $data['image'] = $uploaded->getSecurePath();
+}
 
         Project::create($data);
         return redirect()->route('admin.projects.index')->with('success', 'Project added!');
@@ -258,11 +264,11 @@ class AdminController extends Controller
         $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
         if ($request->hasFile('image')) {
-            if ($project->image) {
-                Storage::disk('public')->delete($project->image);
-            }
-            $data['image'] = $request->file('image')->store('projects', 'public');
-        }
+    $uploaded = Cloudinary::upload($request->file('image')->getRealPath(), [
+        'folder' => 'portfolio/projects',
+    ]);
+    $data['image'] = $uploaded->getSecurePath();
+}
 
         $project->update($data);
         return redirect()->route('admin.projects.index')->with('success', 'Project updated!');
@@ -270,9 +276,6 @@ class AdminController extends Controller
 
     public function projectsDestroy(Project $project)
     {
-        if ($project->image) {
-            Storage::disk('public')->delete($project->image);
-        }
         $project->delete();
         return back()->with('success', 'Project deleted.');
     }

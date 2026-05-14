@@ -10,7 +10,7 @@
         <div class="current-cv">
             <i class="fas fa-file-pdf"></i>
             <p>Current CV: <strong>{{ basename($currentCv) }}</strong></p>
-            <a href="{{ asset('storage/'.$currentCv) }}" target="_blank" class="btn-edit" style="font-size:.85rem; padding:.3rem .8rem;">Preview</a>
+            <a href="{{ $currentCv }}" target="_blank" ...>Preview</a>
         </div>
         @endif
         <div class="form-group">

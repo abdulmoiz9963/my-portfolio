@@ -50,7 +50,7 @@
                 <label>Project Image</label>
                 @if(isset($project) && $project->image)
                     <div class="current-img">
-                        <img src="{{ asset('storage/'.$project->image) }}" alt="Current Image">
+                        <img src="{{ $project->image }}" alt="Current Image">
                         <p>Current image. Upload new to replace.</p>
                     </div>
                 @endif

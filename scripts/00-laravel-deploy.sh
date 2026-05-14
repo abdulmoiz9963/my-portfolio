@@ -4,6 +4,9 @@ set -e
 echo "Running composer install..."
 composer install --no-dev --optimize-autoloader --working-dir=/var/www/html
 
+echo "Publishing Cloudinary config..."
+php artisan vendor:publish --provider="CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider" --force || true
+
 echo "Caching config..."
 php artisan config:cache
 

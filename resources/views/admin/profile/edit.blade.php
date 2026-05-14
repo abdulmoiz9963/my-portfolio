@@ -56,7 +56,7 @@
                     <label>Upload Profile Photo</label>
                     @if($profile->profile_image)
                         <div class="current-img" style="margin-bottom:1rem;">
-                            <img src="{{ asset('storage/'.$profile->profile_image) }}" alt="Current Profile Photo">
+                           <img src="{{ $profile->profile_image }}" alt="Current Profile Photo">
                             <p>Current photo. Upload new to replace.</p>
                         </div>
                     @endif

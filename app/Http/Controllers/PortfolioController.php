@@ -7,7 +7,7 @@ use App\Models\Skill;
 use App\Models\Experience;
 use App\Models\Project;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class PortfolioController extends Controller
 {
@@ -22,23 +22,23 @@ class PortfolioController extends Controller
     }
 
     public function downloadCv()
-    {
-        $profile = Profile::first();
-        $cvPath = $profile->cv_path ?? null;
+{
+    $profile = Profile::first();
+    $cvPath = $profile->cv_path ?? null;
 
-        // Check admin-uploaded CV first
-        if ($cvPath && Storage::disk('public')->exists($cvPath)) {
-            return Storage::disk('public')->download($cvPath, 'Abdul_Moiz_Ashraf_CV.pdf');
-        }
-
-        // Fallback to original uploaded CV
-        $defaultPath = public_path('cv/Abdul_Moiz_Ashraf_CV.pdf');
-        if (file_exists($defaultPath)) {
-            return response()->download($defaultPath, 'Abdul_Moiz_Ashraf_CV.pdf');
-        }
-
-        return back()->with('error', 'CV not available yet.');
+    // cv_path is now a full Cloudinary URL - redirect to it
+    if ($cvPath) {
+        return redirect($cvPath);
     }
+
+    // Fallback to local CV file
+    $defaultPath = public_path('cv/Abdul_Moiz_Ashraf_CV.pdf');
+    if (file_exists($defaultPath)) {
+        return response()->download($defaultPath, 'Abdul_Moiz_Ashraf_CV.pdf');
+    }
+
+    return back()->with('error', 'CV not available yet.');
+}
 
     public function sendContact(Request $request)
     {

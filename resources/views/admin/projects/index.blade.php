@@ -28,7 +28,7 @@
                 <td>{{ $loop->iteration }}</td>
                 <td>
                     @if($project->image)
-                    <img src="{{ asset('storage/'.$project->image) }}" alt="img" class="table-thumb">
+                    <img src="{{ $project->image }}" alt="img" class="table-thumb">
                     @else
                     <div class="table-thumb-placeholder"><i class="fas fa-image"></i></div>
                     @endif
