@@ -8,7 +8,7 @@ use App\Models\Experience;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+
 
 class AdminController extends Controller
 {
@@ -76,10 +76,11 @@ class AdminController extends Controller
         $data = $request->only(['name', 'email', 'phone', 'location', 'tagline', 'about', 'linkedin', 'github']);
 
        if ($request->hasFile('profile_image')) {
-    $uploaded = Cloudinary::upload($request->file('profile_image')->getRealPath(), [
+    $file = $request->file('profile_image');
+    $result = cloudinary()->uploadApi()->upload($file->getRealPath(), [
         'folder' => 'portfolio/profile',
     ]);
-    $data['profile_image'] = $uploaded->getSecurePath();
+    $data['profile_image'] = $result['secure_url'];
 }
 
         $profile->fill($data)->save();
@@ -104,13 +105,14 @@ public function cvStore(Request $request)
 
     $profile = Profile::firstOrNew([]);
 
-    $uploaded = Cloudinary::uploadFile($request->file('cv')->getRealPath(), [
+    $file = $request->file('cv');
+    $result = cloudinary()->uploadApi()->upload($file->getRealPath(), [
         'folder'        => 'portfolio/cv',
         'resource_type' => 'raw',
         'public_id'     => 'Abdul_Moiz_Ashraf_CV',
     ]);
 
-    $profile->cv_path = $uploaded->getSecurePath();
+    $profile->cv_path = $result['secure_url'];
     $profile->save();
 
     return back()->with('success', 'CV uploaded successfully!');
@@ -237,10 +239,10 @@ public function cvStore(Request $request)
         $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
         if ($request->hasFile('image')) {
-    $uploaded = Cloudinary::upload($request->file('image')->getRealPath(), [
+    $result = cloudinary()->uploadApi()->upload($request->file('image')->getRealPath(), [
         'folder' => 'portfolio/projects',
     ]);
-    $data['image'] = $uploaded->getSecurePath();
+    $data['image'] = $result['secure_url'];
 }
 
         Project::create($data);
@@ -264,10 +266,10 @@ public function cvStore(Request $request)
         $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
         if ($request->hasFile('image')) {
-    $uploaded = Cloudinary::upload($request->file('image')->getRealPath(), [
+    $result = cloudinary()->uploadApi()->upload($request->file('image')->getRealPath(), [
         'folder' => 'portfolio/projects',
     ]);
-    $data['image'] = $uploaded->getSecurePath();
+    $data['image'] = $result['secure_url'];
 }
 
         $project->update($data);
