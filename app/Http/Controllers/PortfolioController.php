@@ -26,9 +26,10 @@ class PortfolioController extends Controller
     $profile = Profile::first();
     $cvPath = $profile->cv_path ?? null;
 
-    // cv_path is now a full Cloudinary URL - redirect to it
     if ($cvPath) {
-        return redirect($cvPath);
+        // fl_attachment forces download with correct .pdf filename
+        $downloadUrl = str_replace('/upload/', '/upload/fl_attachment:Abdul_Moiz_Ashraf_CV.pdf/', $cvPath);
+        return redirect($downloadUrl);
     }
 
     // Fallback to local CV file
