@@ -61,24 +61,29 @@ public function sendContact(Request $request)
 
     $data = $request->only(['name', 'email', 'subject', 'message']);
 
-    Mail::later(Carbon::now()->addSeconds(1), [], [], function ($mail) use ($data) {
-    $mail->to(config('mail.from.address'))
-         ->replyTo($data['email'], $data['name'])
-         ->subject('Portfolio Contact: ' . $data['subject'])
-         ->html("
-            <div style='font-family: Arial, sans-serif; max-width: 600px;'>
-                <h2 style='color: #6c63ff;'>New Contact Message</h2>
-                <p><strong>Name:</strong> {$data['name']}</p>
-                <p><strong>Email:</strong> {$data['email']}</p>
-                <p><strong>Subject:</strong> {$data['subject']}</p>
-                <p><strong>Message:</strong></p>
-                <div style='background: #f4f4f4; padding: 15px; border-radius: 5px;'>
-                    {$data['message']}
-                </div>
-            </div>
-         ");
-});
+    try {
+        Mail::send([], [], function ($mail) use ($data) {
+            $mail->to(config('mail.from.address'))
+                 ->replyTo($data['email'], $data['name'])
+                 ->subject('Portfolio Contact: ' . $data['subject'])
+                 ->html("
+                    <div style='font-family: Arial, sans-serif; max-width: 600px;'>
+                        <h2 style='color: #6c63ff;'>New Contact Message</h2>
+                        <p><strong>Name:</strong> {$data['name']}</p>
+                        <p><strong>Email:</strong> {$data['email']}</p>
+                        <p><strong>Subject:</strong> {$data['subject']}</p>
+                        <p><strong>Message:</strong></p>
+                        <div style='background: #f4f4f4; padding: 15px; border-radius: 5px;'>
+                            {$data['message']}
+                        </div>
+                    </div>
+                 ");
+        });
+    } catch (\Exception $e) {
+        \Log::error('Mail error: ' . $e->getMessage());
+        return back()->with('error', 'Could not send message. Please email me directly at ' . config('mail.from.address'));
+    }
 
-return back()->with('success', 'Thanks! Your message has been sent.');
+    return back()->with('success', 'Thanks! Your message has been sent.');
 }
 }
