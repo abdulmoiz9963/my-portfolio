@@ -63,25 +63,25 @@ public function sendContact(Request $request)
 
     try {
         Mail::send([], [], function ($mail) use ($data) {
-            $mail->to(config('mail.from.address'))
-                 ->replyTo($data['email'], $data['name'])
-                 ->subject('Portfolio Contact: ' . $data['subject'])
-                 ->html("
-                    <div style='font-family: Arial, sans-serif; max-width: 600px;'>
-                        <h2 style='color: #6c63ff;'>New Contact Message</h2>
-                        <p><strong>Name:</strong> {$data['name']}</p>
-                        <p><strong>Email:</strong> {$data['email']}</p>
-                        <p><strong>Subject:</strong> {$data['subject']}</p>
-                        <p><strong>Message:</strong></p>
-                        <div style='background: #f4f4f4; padding: 15px; border-radius: 5px;'>
-                            {$data['message']}
-                        </div>
-                        <p style='color: #999; font-size: 12px; margin-top: 20px;'>
-                            Sent from your portfolio contact form.
-                        </p>
-                    </div>
-                 ");
-        });
+    $mail->to(env('RESEND_TO_ADDRESS'))  // your Gmail here
+         ->replyTo($data['email'], $data['name'])
+         ->subject('Portfolio Contact: ' . $data['subject'])
+         ->html("
+            <div style='font-family: Arial, sans-serif; max-width: 600px;'>
+                <h2 style='color: #6c63ff;'>New Contact Message</h2>
+                <p><strong>Name:</strong> {$data['name']}</p>
+                <p><strong>Email:</strong> {$data['email']}</p>
+                <p><strong>Subject:</strong> {$data['subject']}</p>
+                <p><strong>Message:</strong></p>
+                <div style='background: #f4f4f4; padding: 15px; border-radius: 5px;'>
+                    {$data['message']}
+                </div>
+                <p style='color: #999; font-size: 12px; margin-top: 20px;'>
+                    Sent from your portfolio contact form.
+                </p>
+            </div>
+         ");
+});
     } catch (\Exception $e) {
         \Log::error('Mail error: ' . $e->getMessage());
         return back()->with('error', 'Could not send message. Please email me directly.');
