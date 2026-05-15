@@ -8,6 +8,7 @@ use App\Models\Experience;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Mail;
 
 class PortfolioController extends Controller
 {
@@ -48,19 +49,32 @@ class PortfolioController extends Controller
     return back()->with('error', 'CV not available yet.');
 }
 
-    public function sendContact(Request $request)
-    {
-        $request->validate([
-            'name'    => 'required|string|max:100',
-            'email'   => 'required|email|max:100',
-            'subject' => 'required|string|max:200',
-            'message' => 'required|string|max:2000',
-        ]);
 
-        // Store the contact message in session / or optionally mail
-        // You can integrate Mail::to(...) here
-        // \App\Models\ContactMessage::create($request->only(['name','email','subject','message']));
+public function sendContact(Request $request)
+{
+    $request->validate([
+        'name'    => 'required|string|max:100',
+        'email'   => 'required|email|max:100',
+        'subject' => 'required|string|max:200',
+        'message' => 'required|string|max:2000',
+    ]);
 
-        return back()->with('success', 'Thanks! Your message has been sent.');
-    }
+    $data = $request->only(['name', 'email', 'subject', 'message']);
+
+    Mail::send([], [], function ($mail) use ($data) {
+        $mail->to(config('mail.from.address'))
+             ->replyTo($data['email'], $data['name'])
+             ->subject('Portfolio Contact: ' . $data['subject'])
+             ->html("
+                <h3>New message from your portfolio</h3>
+                <p><strong>Name:</strong> {$data['name']}</p>
+                <p><strong>Email:</strong> {$data['email']}</p>
+                <p><strong>Subject:</strong> {$data['subject']}</p>
+                <p><strong>Message:</strong></p>
+                <p>{$data['message']}</p>
+             ");
+    });
+
+    return back()->with('success', 'Thanks! Your message has been sent.');
+}
 }
