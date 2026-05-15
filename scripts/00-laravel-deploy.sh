@@ -26,4 +26,11 @@ php artisan storage:link
 echo "Seeding admin user..."
 php artisan db:seed --force
 
+echo "Creating queue jobs table..."
+php artisan queue:table || true
+php artisan migrate --force
+
+echo "Starting queue worker..."
+php artisan queue:work --daemon --timeout=60 --tries=3 &
+
 echo "Done!"
