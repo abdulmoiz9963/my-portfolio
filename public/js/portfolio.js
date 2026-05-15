@@ -28,8 +28,6 @@ typeEffect();
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {
   navbar.classList.toggle('scrolled', window.scrollY > 50);
-
-  // Active link highlight
   const sections = document.querySelectorAll('section[id]');
   const scrollPos = window.scrollY + 90;
   sections.forEach(sec => {
@@ -70,4 +68,13 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     const target = document.querySelector(href);
     if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
   });
+});
+
+// ── Contact form popup ────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const successMsg = document.getElementById('successPopup');
+  if (successMsg) {
+    successMsg.classList.add('show');
+    setTimeout(() => successMsg.classList.remove('show'), 4000);
+  }
 });

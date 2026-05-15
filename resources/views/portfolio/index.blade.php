@@ -1,6 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
+{{-- Success Popup --}}
+@if(session('success'))
+<div class="popup-toast" id="successPopup">
+    <div class="popup-inner">
+        <i class="fas fa-check-circle"></i>
+        <div>
+            <p class="popup-title">Message Sent!</p>
+            <p class="popup-text">Thanks! I'll get back to you soon.</p>
+        </div>
+        <button onclick="this.closest('.popup-toast').classList.remove('show')">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+@endif
 
 <!-- ══════════════════════════════════════════════
      HERO
