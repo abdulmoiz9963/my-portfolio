@@ -61,30 +61,31 @@ public function sendContact(Request $request)
 
     $data = $request->only(['name', 'email', 'subject', 'message']);
 
-    // This runs AFTER response is sent to browser - no timeout
-    app()->terminating(function () use ($data) {
-        try {
-            Mail::send([], [], function ($mail) use ($data) {
-                $mail->to(config('mail.from.address'))
-                     ->replyTo($data['email'], $data['name'])
-                     ->subject('Portfolio Contact: ' . $data['subject'])
-                     ->html("
-                        <div style='font-family: Arial, sans-serif; max-width: 600px;'>
-                            <h2 style='color: #6c63ff;'>New Contact Message</h2>
-                            <p><strong>Name:</strong> {$data['name']}</p>
-                            <p><strong>Email:</strong> {$data['email']}</p>
-                            <p><strong>Subject:</strong> {$data['subject']}</p>
-                            <p><strong>Message:</strong></p>
-                            <div style='background: #f4f4f4; padding: 15px; border-radius: 5px;'>
-                                {$data['message']}
-                            </div>
+    try {
+        Mail::send([], [], function ($mail) use ($data) {
+            $mail->to(config('mail.from.address'))
+                 ->replyTo($data['email'], $data['name'])
+                 ->subject('Portfolio Contact: ' . $data['subject'])
+                 ->html("
+                    <div style='font-family: Arial, sans-serif; max-width: 600px;'>
+                        <h2 style='color: #6c63ff;'>New Contact Message</h2>
+                        <p><strong>Name:</strong> {$data['name']}</p>
+                        <p><strong>Email:</strong> {$data['email']}</p>
+                        <p><strong>Subject:</strong> {$data['subject']}</p>
+                        <p><strong>Message:</strong></p>
+                        <div style='background: #f4f4f4; padding: 15px; border-radius: 5px;'>
+                            {$data['message']}
                         </div>
-                     ");
-            });
-        } catch (\Exception $e) {
-            \Log::error('Mail error: ' . $e->getMessage());
-        }
-    });
+                        <p style='color: #999; font-size: 12px; margin-top: 20px;'>
+                            Sent from your portfolio contact form.
+                        </p>
+                    </div>
+                 ");
+        });
+    } catch (\Exception $e) {
+        \Log::error('Mail error: ' . $e->getMessage());
+        return back()->with('error', 'Could not send message. Please email me directly.');
+    }
 
     return back()->with('success', 'Thanks! Your message has been sent.');
 }

@@ -7,6 +7,9 @@ composer install --no-dev --optimize-autoloader --working-dir=/var/www/html
 echo "Publishing Cloudinary config..."
 php artisan vendor:publish --provider="CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider" --force || true
 
+echo "Publishing Resend config..."
+php artisan vendor:publish --provider="Resend\Laravel\ResendServiceProvider" --force || true
+
 echo "Clearing cache..."
 php artisan config:clear
 php artisan cache:clear
@@ -25,9 +28,5 @@ php artisan storage:link
 
 echo "Seeding admin user..."
 php artisan db:seed --force
-
-echo "Creating queue jobs table..."
-php artisan queue:table || true
-php artisan migrate --force
 
 echo "Done!"
