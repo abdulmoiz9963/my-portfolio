@@ -50,6 +50,8 @@ class PortfolioController extends Controller
 }
 
 
+use Illuminate\Support\Facades\Mail;
+
 public function sendContact(Request $request)
 {
     $request->validate([
