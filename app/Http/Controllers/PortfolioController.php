@@ -61,56 +61,19 @@ public function sendContact(Request $request)
 
     $data = $request->only(['name', 'email', 'subject', 'message']);
 
-    try {
-        // Email to you (portfolio owner)
-        Mail::send([], [], function ($mail) use ($data) {
-            $mail->to(config('mail.from.address'))
-                 ->replyTo($data['email'], $data['name'])
-                 ->subject('Portfolio Contact: ' . $data['subject'])
-                 ->html("
-                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-                        <h2 style='color: #6c63ff; border-bottom: 2px solid #6c63ff; padding-bottom: 10px;'>
-                            New Contact Message
-                        </h2>
-                        <p><strong>Name:</strong> {$data['name']}</p>
-                        <p><strong>Email:</strong> {$data['email']}</p>
-                        <p><strong>Subject:</strong> {$data['subject']}</p>
-                        <p><strong>Message:</strong></p>
-                        <div style='background: #f4f4f4; padding: 15px; border-radius: 5px;'>
-                            {$data['message']}
-                        </div>
-                        <p style='color: #999; font-size: 12px; margin-top: 20px;'>
-                            Sent from your portfolio contact form.
-                        </p>
-                    </div>
-                 ");
-        });
-
-        // Confirmation email to sender
-        Mail::send([], [], function ($mail) use ($data) {
-            $mail->to($data['email'], $data['name'])
-                 ->subject('Thanks for reaching out, ' . $data['name'] . '!')
-                 ->html("
-                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-                        <h2 style='color: #6c63ff; border-bottom: 2px solid #6c63ff; padding-bottom: 10px;'>
-                            Message Received!
-                        </h2>
-                        <p>Hi <strong>{$data['name']}</strong>,</p>
-                        <p>Thanks for getting in touch! I'll get back to you as soon as possible.</p>
-                        <p><strong>Your message:</strong></p>
-                        <div style='background: #f4f4f4; padding: 15px; border-radius: 5px;'>
-                            {$data['message']}
-                        </div>
-                        <br>
-                        <p>Best regards,<br><strong>Abdul Moiz Ashraf</strong></p>
-                        <p style='color: #999; font-size: 12px;'>DevOps Engineer | Lahore, Pakistan</p>
-                    </div>
-                 ");
-        });
-
-    } catch (\Exception $e) {
-        return back()->with('error', 'Failed to send message. Please try again or email me directly.');
-    }
+    Mail::send([], [], function ($mail) use ($data) {
+        $mail->to(config('mail.from.address'))
+             ->replyTo($data['email'], $data['name'])
+             ->subject('Portfolio Contact: ' . $data['subject'])
+             ->html("
+                <h3>New message from your portfolio</h3>
+                <p><strong>Name:</strong> {$data['name']}</p>
+                <p><strong>Email:</strong> {$data['email']}</p>
+                <p><strong>Subject:</strong> {$data['subject']}</p>
+                <p><strong>Message:</strong></p>
+                <p>{$data['message']}</p>
+             ");
+    });
 
     return back()->with('success', 'Thanks! Your message has been sent.');
 }
