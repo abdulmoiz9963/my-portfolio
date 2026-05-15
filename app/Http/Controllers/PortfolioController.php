@@ -49,9 +49,6 @@ class PortfolioController extends Controller
     return back()->with('error', 'CV not available yet.');
 }
 
-
-use Illuminate\Support\Facades\Mail;
-
 public function sendContact(Request $request)
 {
     $request->validate([
