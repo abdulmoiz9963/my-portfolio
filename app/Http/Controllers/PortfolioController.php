@@ -9,8 +9,7 @@ use App\Models\Project;
 use Illuminate\Http\Request;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Mail;
-use Carbon\Carbon;
-use App\Mail\ContactMail;
+
 
 class PortfolioController extends Controller
 {
@@ -62,13 +61,30 @@ public function sendContact(Request $request)
 
     $data = $request->only(['name', 'email', 'subject', 'message']);
 
-    try {
-        // dispatch() queues it in background - returns instantly
-        Mail::queue(new ContactMail($data));
-    } catch (\Exception $e) {
-        \Log::error('Mail error: ' . $e->getMessage());
-        return back()->with('error', 'Could not send message. Please email me directly.');
-    }
+    // This runs AFTER response is sent to browser - no timeout
+    app()->terminating(function () use ($data) {
+        try {
+            Mail::send([], [], function ($mail) use ($data) {
+                $mail->to(config('mail.from.address'))
+                     ->replyTo($data['email'], $data['name'])
+                     ->subject('Portfolio Contact: ' . $data['subject'])
+                     ->html("
+                        <div style='font-family: Arial, sans-serif; max-width: 600px;'>
+                            <h2 style='color: #6c63ff;'>New Contact Message</h2>
+                            <p><strong>Name:</strong> {$data['name']}</p>
+                            <p><strong>Email:</strong> {$data['email']}</p>
+                            <p><strong>Subject:</strong> {$data['subject']}</p>
+                            <p><strong>Message:</strong></p>
+                            <div style='background: #f4f4f4; padding: 15px; border-radius: 5px;'>
+                                {$data['message']}
+                            </div>
+                        </div>
+                     ");
+            });
+        } catch (\Exception $e) {
+            \Log::error('Mail error: ' . $e->getMessage());
+        }
+    });
 
     return back()->with('success', 'Thanks! Your message has been sent.');
 }

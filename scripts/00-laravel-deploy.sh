@@ -17,7 +17,6 @@ php artisan config:cache
 echo "Caching routes..."
 php artisan route:cache
 
-
 echo "Running migrations..."
 php artisan migrate --force
 
@@ -30,8 +29,5 @@ php artisan db:seed --force
 echo "Creating queue jobs table..."
 php artisan queue:table || true
 php artisan migrate --force
-
-echo "Starting queue worker..."
-php artisan queue:work --daemon --timeout=60 --tries=3 &
 
 echo "Done!"
