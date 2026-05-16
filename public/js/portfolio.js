@@ -71,10 +71,13 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // ── Contact form popup ────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+// ── Contact form popup ────────────────────────────────────────
+window.addEventListener('load', () => {
   const successMsg = document.getElementById('successPopup');
   if (successMsg) {
-    successMsg.classList.add('show');
-    setTimeout(() => successMsg.classList.remove('show'), 4000);
+    // Small delay to allow CSS transition to work
+    setTimeout(() => successMsg.classList.add('show'), 100);
+    // Auto hide after 4 seconds
+    setTimeout(() => successMsg.classList.remove('show'), 4500);
   }
 });
