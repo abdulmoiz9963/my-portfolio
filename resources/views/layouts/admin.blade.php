@@ -40,6 +40,9 @@
                 <li class="{{ request()->routeIs('admin.cv*') ? 'active' : '' }}">
                     <a href="{{ route('admin.cv.upload') }}"><i class="fas fa-file-pdf"></i> Upload CV</a>
                 </li>
+                <li class="{{ request()->routeIs('admin.certifications*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.certifications.index') }}"><i class="fas fa-graduation-cap"></i> Certifications</a>
+                </li>
             </ul>
         </nav>
         <div class="sidebar-footer">

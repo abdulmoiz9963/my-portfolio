@@ -63,6 +63,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/projects/{project}/edit', [AdminController::class, 'projectsEdit'])->name('projects.edit');
     Route::put('/projects/{project}', [AdminController::class, 'projectsUpdate'])->name('projects.update');
     Route::delete('/projects/{project}', [AdminController::class, 'projectsDestroy'])->name('projects.destroy');
+
+    // Certifications CRUD
+    Route::get('/certifications', [AdminController::class, 'certificationsIndex'])->name('certifications.index');
+    Route::get('/certifications/create', [AdminController::class, 'certificationsCreate'])->name('certifications.create');
+    Route::post('/certifications', [AdminController::class, 'certificationsStore'])->name('certifications.store');
+    Route::get('/certifications/{certification}/edit', [AdminController::class, 'certificationsEdit'])->name('certifications.edit');
+    Route::put('/certifications/{certification}', [AdminController::class, 'certificationsUpdate'])->name('certifications.update');
+    Route::delete('/certifications/{certification}', [AdminController::class, 'certificationsDestroy'])->name('certifications.destroy');
 });
 Route::get('/login', function () {
     return redirect()->route('admin.login');

@@ -6,6 +6,7 @@ use App\Models\Profile;
 use App\Models\Skill;
 use App\Models\Experience;
 use App\Models\Project;
+use App\Models\Certification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,10 +28,11 @@ class AdminController extends Controller
     public function dashboard()
     {
         $stats = [
-            'projects'   => Project::count(),
-            'skills'     => Skill::count(),
-            'experience' => Experience::count(),
-            'messages'   => 0,
+            'projects'       => Project::count(),
+            'skills'         => Skill::count(),
+            'experience'     => Experience::count(),
+            'certifications' => Certification::count(),
+            'messages'       => 0,
         ];
         $recentProjects = Project::latest()->take(5)->get();
         return view('admin.dashboard', compact('stats', 'recentProjects'));
@@ -297,5 +299,85 @@ class AdminController extends Controller
     {
         $project->delete();
         return back()->with('success', 'Project deleted.');
+    }
+
+    // ─── Certifications ─────────────────────────────────────────────────────────────
+
+    public function certificationsIndex()
+    {
+        $certifications = Certification::orderBy('sort_order')->get();
+        return view('admin.certifications.index', compact('certifications'));
+    }
+
+    public function certificationsCreate()
+    {
+        return view('admin.certifications.form');
+    }
+
+    public function certificationsStore(Request $request)
+    {
+        $request->validate([
+            'name'                 => 'required|string|max:200',
+            'certificate_number'   => 'required|string|max:200|unique:certifications,certificate_number',
+            'start_date'           => 'required|string|max:50',
+            'expiry_date'          => 'nullable|string|max:50',
+            'image'                => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
+        ]);
+
+        $data = $request->only(['name', 'certificate_number', 'start_date', 'expiry_date', 'sort_order']);
+
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            try {
+                $result = $this->uploadToCloudinary(
+                    $request->file('image')->getRealPath(),
+                    ['folder' => 'portfolio/certifications']
+                );
+                $data['image'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
+        }
+
+        Certification::create($data);
+        return redirect()->route('admin.certifications.index')->with('success', 'Certification added!');
+    }
+
+    public function certificationsEdit(Certification $certification)
+    {
+        return view('admin.certifications.form', compact('certification'));
+    }
+
+    public function certificationsUpdate(Request $request, Certification $certification)
+    {
+        $request->validate([
+            'name'               => 'required|string|max:200',
+            'certificate_number' => 'required|string|max:200|unique:certifications,certificate_number,' . $certification->id,
+            'start_date'         => 'required|string|max:50',
+            'expiry_date'        => 'nullable|string|max:50',
+            'image'              => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
+        ]);
+
+        $data = $request->only(['name', 'certificate_number', 'start_date', 'expiry_date', 'sort_order']);
+
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            try {
+                $result = $this->uploadToCloudinary(
+                    $request->file('image')->getRealPath(),
+                    ['folder' => 'portfolio/certifications']
+                );
+                $data['image'] = $result['secure_url'];
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
+        }
+
+        $certification->update($data);
+        return redirect()->route('admin.certifications.index')->with('success', 'Certification updated!');
+    }
+
+    public function certificationsDestroy(Certification $certification)
+    {
+        $certification->delete();
+        return back()->with('success', 'Certification deleted.');
     }
 }

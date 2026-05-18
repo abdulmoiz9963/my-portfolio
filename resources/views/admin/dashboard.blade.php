@@ -55,6 +55,9 @@
             <a href="{{ route('admin.cv.upload') }}" class="quick-action-btn">
                 <i class="fas fa-upload"></i> Upload CV
             </a>
+            <a href="{{ route('admin.certifications.create') }}" class="quick-action-btn">
+                <i class="fas fa-plus"></i> Add Certification
+            </a>
             <a href="{{ route('portfolio') }}" target="_blank" class="quick-action-btn outline">
                 <i class="fas fa-eye"></i> View Portfolio
             </a>

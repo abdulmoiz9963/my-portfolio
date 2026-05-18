@@ -340,6 +340,58 @@
 </section>
 
 <!-- ══════════════════════════════════════════════
+     CERTIFICATIONS
+══════════════════════════════════════════════ -->
+<section class="section certifications-section" id="certifications">
+    <div class="container">
+        <div class="section-header">
+            <p class="section-tag">my achievements</p>
+            <h2 class="section-title">Professional <span class="accent">Certifications</span></h2>
+        </div>
+        <div class="certifications-grid">
+            @forelse($certifications as $cert)
+            <div class="cert-card reveal">
+                @if($cert->image)
+                <div class="cert-img-wrap">
+                    <img src="{{ $cert->image }}" alt="{{ $cert->name }}" class="cert-img" onclick="openImageModal('{{ $cert->image }}', '{{ $cert->name }}')" style="cursor: pointer;">
+                    <div class="cert-overlay">
+                        <button class="cert-view-btn" onclick="openImageModal('{{ $cert->image }}', '{{ $cert->name }}')">
+                            <i class="fas fa-search-plus"></i> View
+                        </button>
+                    </div>
+                </div>
+                @else
+                <div class="cert-img-placeholder">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                @endif
+                <div class="cert-body">
+                    <h3 class="cert-title">{{ $cert->name }}</h3>
+                    <p class="cert-number">
+                        <i class="fas fa-hashtag"></i> {{ $cert->certificate_number }}
+                    </p>
+                    <div class="cert-dates">
+                        <p class="cert-date">
+                            <i class="fas fa-calendar-check"></i> Started: {{ $cert->start_date }}
+                        </p>
+                        @if($cert->expiry_date)
+                        <p class="cert-date">
+                            <i class="fas fa-calendar-times"></i> Expires: {{ $cert->expiry_date }}
+                        </p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                <p style="color: #999; font-size: 1.1rem;">No certifications added yet.</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
      PROJECTS
 ══════════════════════════════════════════════ -->
 <section class="section projects-section" id="projects">
@@ -353,9 +405,12 @@
             <div class="project-card reveal">
                 @if($project->image)
                 <div class="project-img-wrap">
-                <img src="{{ $project->image }}" alt="{{ $project->title }}" class="project-img">
+                <img src="{{ $project->image }}" alt="{{ $project->title }}" class="project-img" onclick="openImageModal('{{ $project->image }}', '{{ $project->title }}')" style="cursor: pointer;">
                     <div class="project-overlay">
                         <div class="project-links">
+                            <button class="proj-link" onclick="openImageModal('{{ $project->image }}', '{{ $project->title }}')" title="View Image" style="background: none; border: none; cursor: pointer; color: inherit;">
+                                <i class="fas fa-search-plus"></i>
+                            </button>
                             @if($project->live_url)
                             <a href="{{ $project->live_url }}" target="_blank" class="proj-link" title="Live Demo">
                                 <i class="fas fa-external-link-alt"></i>
@@ -502,4 +557,42 @@
     </div>
 </section>
 
+<!-- Image Modal -->
+<div id="imageModal" class="image-modal" onclick="closeImageModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeImageModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="modalImage" src="" alt="" class="modal-image">
+        <p id="modalCaption" class="modal-caption"></p>
+    </div>
+</div>
+
 @endsection
+
+@push('scripts')
+<script>
+function openImageModal(imageSrc, caption) {
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalCaption = document.getElementById('modalCaption');
+
+    modalImage.src = imageSrc;
+    modalCaption.textContent = caption;
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal(event) {
+    const modal = document.getElementById('imageModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = 'auto';
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeImageModal();
+    }
+});
+</script>
+@endpush

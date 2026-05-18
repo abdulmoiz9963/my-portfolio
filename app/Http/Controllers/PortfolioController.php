@@ -6,6 +6,7 @@ use App\Models\Profile;
 use App\Models\Skill;
 use App\Models\Experience;
 use App\Models\Project;
+use App\Models\Certification;
 use Illuminate\Http\Request;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Mail;
@@ -19,8 +20,9 @@ class PortfolioController extends Controller
         $skills = Skill::orderBy('sort_order')->get()->groupBy('category');
         $experiences = Experience::orderBy('sort_order')->orderByDesc('created_at')->get();
         $projects = Project::orderBy('sort_order')->orderByDesc('created_at')->get();
+        $certifications = Certification::orderBy('sort_order')->get();
 
-        return view('portfolio.index', compact('profile', 'skills', 'experiences', 'projects'));
+        return view('portfolio.index', compact('profile', 'skills', 'experiences', 'projects', 'certifications'));
     }
 
     public function downloadCv()
