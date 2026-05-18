@@ -81,3 +81,33 @@ window.addEventListener('load', () => {
     setTimeout(() => successMsg.classList.remove('show'), 4500);
   }
 });
+// ── Image Modal functions ─────────────────────────────────────
+function openImageModal(imageSrc, caption) {
+  const modal = document.getElementById('imageModal');
+  const modalImage = document.getElementById('modalImage');
+  const modalCaption = document.getElementById('modalCaption');
+
+  if (!modal || !modalImage) return;
+
+  modalImage.src = imageSrc;
+  if (modalCaption) modalCaption.textContent = caption || '';
+
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal(event) {
+  // Agar event hai aur modal-content pe click hua to close mat karo
+  if (event && event.target.closest('.modal-content')) return;
+
+  const modal = document.getElementById('imageModal');
+  if (!modal) return;
+
+  modal.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// ESC key se bhi band ho
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeImageModal();
+});

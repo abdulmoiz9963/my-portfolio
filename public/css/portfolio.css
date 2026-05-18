@@ -453,15 +453,17 @@ a.contact-value:hover { color: var(--accent); }
 }
 
 .cert-view-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  width: auto;               /* fixed width hatao */
+  height: auto;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
   background: var(--accent);
   color: #0a0e17;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
   border: none;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
@@ -513,9 +515,8 @@ a.contact-value:hover { color: var(--accent); }
   color: var(--muted2);
 }
 
-/* ── Image Modal ─────────────────────────────────────────────────── */
+/* ── Image Modal — FIXED ──────────────────────────────────── */
 .image-modal {
-  display: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -524,15 +525,19 @@ a.contact-value:hover { color: var(--accent); }
   background: rgba(10, 14, 23, 0.95);
   backdrop-filter: blur(5px);
   z-index: 2000;
+  display: flex;              /* display:none hatao, flex rakho hamesha */
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  visibility: hidden;         /* display ki jagah visibility use karo */
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
 }
 
 .image-modal.show {
-  display: flex;
   opacity: 1;
+  visibility: visible;        /* sirf yeh do properties toggle hongi */
+  pointer-events: auto;
 }
 
 .modal-content {
