@@ -558,9 +558,9 @@
 </section>
 
 <!-- Image Modal -->
-<div id="imageModal" class="image-modal" onclick="closeImageModal(event)">
+<div id="imageModal" class="image-modal" onclick="window.closeImageModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="closeImageModal()">
+        <button class="modal-close" onclick="window.closeImageModal()">
             <i class="fas fa-times"></i>
         </button>
         <img id="modalImage" src="" alt="" class="modal-image">
@@ -579,15 +579,5 @@ window.addEventListener('load', () => {
     setTimeout(() => successPopup.classList.remove('show'), 4500);
   }
 });
-<!-- Image Modal -->
-<div id="imageModal" class="image-modal" onclick="window.closeImageModal(event)">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="window.closeImageModal()">
-            <i class="fas fa-times"></i>
-        </button>
-        <img id="modalImage" src="" alt="" class="modal-image">
-        <p id="modalCaption" class="modal-caption"></p>
-    </div>
-</div>
 </script>
 @endpush
