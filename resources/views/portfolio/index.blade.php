@@ -353,9 +353,9 @@
             <div class="cert-card reveal">
                 @if($cert->image)
                 <div class="cert-img-wrap">
-                    <img src="{{ $cert->image }}" alt="{{ $cert->name }}" class="cert-img" onclick="openImageModal('{{ $cert->image }}', '{{ $cert->name }}')" style="cursor: pointer;">
+                    <img src="{{ $cert->image }}" alt="{{ $cert->name }}" class="cert-img" onclick="window.openImageModal('{{ $cert->image }}', '{{ $cert->name }}')" style="cursor: pointer;">
                     <div class="cert-overlay">
-                        <button class="cert-view-btn" onclick="openImageModal('{{ $cert->image }}', '{{ $cert->name }}')">
+                        <button class="cert-view-btn" onclick="window.openImageModal('{{ $cert->image }}', '{{ $cert->name }}')">
                             <i class="fas fa-search-plus"></i> View
                         </button>
                     </div>
@@ -405,10 +405,10 @@
             <div class="project-card reveal">
                 @if($project->image)
                 <div class="project-img-wrap">
-                <img src="{{ $project->image }}" alt="{{ $project->title }}" class="project-img" onclick="openImageModal('{{ $project->image }}', '{{ $project->title }}')" style="cursor: pointer;">
+                <img src="{{ $project->image }}" alt="{{ $project->title }}" class="project-img" onclick="window.openImageModal('{{ $project->image }}', '{{ $project->title }}')" style="cursor: pointer;">
                     <div class="project-overlay">
                         <div class="project-links">
-                            <button class="proj-link" onclick="openImageModal('{{ $project->image }}', '{{ $project->title }}')" title="View Image" style="background: none; border: none; cursor: pointer; color: inherit;">
+                            <button class="proj-link" onclick="window.openImageModal('{{ $project->image }}', '{{ $project->title }}')" title="View Image" style="background: none; border: none; cursor: pointer; color: inherit;">
                                 <i class="fas fa-search-plus"></i>
                             </button>
                             @if($project->live_url)
@@ -572,27 +572,22 @@
 
 @push('scripts')
 <script>
-function openImageModal(imageSrc, caption) {
-    const modal = document.getElementById('imageModal');
-    const modalImage = document.getElementById('modalImage');
-    const modalCaption = document.getElementById('modalCaption');
-
-    modalImage.src = imageSrc;
-    modalCaption.textContent = caption;
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeImageModal(event) {
-    const modal = document.getElementById('imageModal');
-    modal.classList.remove('show');
-    document.body.style.overflow = 'auto';
-}
-
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeImageModal();
-    }
+window.addEventListener('load', () => {
+  const successPopup = document.getElementById('successPopup');
+  if (successPopup) {
+    setTimeout(() => successPopup.classList.add('show'), 100);
+    setTimeout(() => successPopup.classList.remove('show'), 4500);
+  }
 });
+<!-- Image Modal -->
+<div id="imageModal" class="image-modal" onclick="window.closeImageModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="window.closeImageModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="modalImage" src="" alt="" class="modal-image">
+        <p id="modalCaption" class="modal-caption"></p>
+    </div>
+</div>
 </script>
 @endpush
