@@ -515,28 +515,25 @@ a.contact-value:hover { color: var(--accent); }
   color: var(--muted2);
 }
 
-/* ── Image Modal — FIXED ──────────────────────────────────── */
 .image-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: rgba(10, 14, 23, 0.95);
   backdrop-filter: blur(5px);
   z-index: 2000;
-  display: flex;              /* display:none hatao, flex rakho hamesha */
+  display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
-  visibility: hidden;         /* display ki jagah visibility use karo */
+  visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
   pointer-events: none;
 }
 
 .image-modal.show {
   opacity: 1;
-  visibility: visible;        /* sirf yeh do properties toggle hongi */
+  visibility: visible;
   pointer-events: auto;
 }
 

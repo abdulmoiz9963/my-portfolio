@@ -26,7 +26,7 @@ php artisan migrate --force
 echo "Creating storage symlink..."
 php artisan storage:link
 
-echo "Seeding admin user..."
-php artisan db:seed --force
-
+echo "Clearing view cache..."
+php artisan view:clear
+php artisan view:cache
 echo "Done!"
