@@ -47,7 +47,7 @@
                 </a>
             </div>
             <div class="hero-socials">
-                <a href="https://www.linkedin.com/in/abdulmoiz-ashraf-b2997a206" target="_blank" class="social-link" aria-label="LinkedIn">
+                <a href="https://www.linkedin.com/in/abdul-moiz-ashraf-b2997a206/" target="_blank" class="social-link" aria-label="LinkedIn">
                     <i class="fab fa-linkedin"></i>
                 </a>
                 <a href="https://github.com/abdulmoiz9963" target="_blank" class="social-link" aria-label="GitHub">
@@ -517,7 +517,7 @@
                         <div class="contact-icon"><i class="fab fa-linkedin"></i></div>
                         <div>
                             <p class="contact-label">LinkedIn</p>
-                            <a href="https://www.linkedin.com/in/abdulmoiz-ashraf-b2997a206" target="_blank" class="contact-value">
+                            <a href="https://www.linkedin.com/in/abdul-moiz-ashraf-b2997a206/" target="_blank" class="contact-value">
                                 abdulmoiz-ashraf
                             </a>
                         </div>

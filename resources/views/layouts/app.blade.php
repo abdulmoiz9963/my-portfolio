@@ -47,7 +47,7 @@
         <div class="footer-inner">
             <p class="footer-text">Built with  by Abdul Moiz</p>
             <div class="footer-links">
-                <a href="https://www.linkedin.com/in/abdulmoiz-ashraf-b2997a206" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.linkedin.com/in/abdul-moiz-ashraf-b2997a206/" target="_blank"><i class="fab fa-linkedin"></i></a>
                 <a href="https://github.com/abdulmoiz9963" target="_blank"><i class="fab fa-github"></i></a>
                 <a href="mailto:moiz9963@gmail.com"><i class="fas fa-envelope"></i></a>
             </div>
